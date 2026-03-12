@@ -2,19 +2,15 @@ const express = require("express")
 
 const app = express()
 
+const {adminAuth} = require('./middlewares/adminAuth')
+app.use('/admin', adminAuth)
 
-app.use('/route', (req,res,next)=>{
-  console.log('1st route sucessfully rendered');
-  next();
-},(req,res,next)=>{
-  console.log('2dn route sucessfully rendered');
-  next();
-}, (req,res,next)=>{
-  console.log('3rd route sucessfully rendered');
-  next();
-},(req,res,next)=>{
-  console.log('4th route sucessfully rendered');
-  res.send('4th response');
+app.use('/admin/getAllData',(req,res)=>{
+    res.send('get the all the data for the request is successfull');
+})
+
+app.use('/admin/deleteTheUser',(req,res)=>{
+    res.send('User data is deleted succesfully');
 })
 
 app.listen("3000" , ()=>{
