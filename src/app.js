@@ -7,15 +7,11 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app = express()
 const DBConnect = require('./config/database');
+app.use(express.json());
 
 
 app.post("/signup", async (req,res)=>{
-    const user = new User({
-        firstName : 'Pawan',
-        lastName : 'Gundabathula',
-        emailId : 'pawan@gmail.com',
-        password : 'pawan"123'
-    })
+    const user = new User(req.body)
 
     try{
         await user.save();
