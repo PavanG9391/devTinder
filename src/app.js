@@ -23,11 +23,30 @@ app.post("/signup", async (req,res)=>{
     
 })
 
+app.get('/user', async (req,res)=> {
+    const userEmail = req.body.emailId;
+    
+     try{
+          const user = await User.find({emailId : userEmail});
+          if(user){          
+            res.send(user)
+          }
+          else{
+            res.status(400).send('user not found') 
+          }                    
+     }
+     catch(err){
+          res.status(400).send('something went wrong');
+     }
+     
+})
+
 DBConnect()
 .then(()=>{
     console.log('Database connection is established');
     app.listen("3000" , ()=>{
     console.log("listen to port 3000 successfully");
+    
 })
 })
 .catch((err)=>{
