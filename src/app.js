@@ -19,7 +19,6 @@ app.post("/signup", async (req,res)=>{
     }catch(err){
         res.status(400).send("error on saving data :" + err.message);
     }
-
     
 })
 
