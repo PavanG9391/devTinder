@@ -40,6 +40,6 @@ const userSchema = new mongoose.Schema({
         type : String,
         default : "this is default about of the user"
     }
-});
+}, {timestamps : true});
 
 module.exports = mongoose.model('User', userSchema); ;
