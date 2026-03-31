@@ -1,6 +1,9 @@
 const express = require("express")
 const dns = require('dns');
 const User = require("./models/User.js");
+const {validationForSignUP} = require("./utils/validation.js");
+
+const bycrypt = require("bcrypt");
 
 // Force Node.js to use Google DNS
 dns.setServers(['8.8.8.8', '8.8.4.4']);
@@ -11,13 +14,25 @@ app.use(express.json());
 
 
 app.post("/signup", async (req,res)=>{
-    const user = new User(req.body)
 
-    try{
+  try{
+
+    validationForSignUP(req);
+
+    const {firstName,lastName,emailId,password} = req.body;
+
+    const passwordHash =  await bycrypt.hash(password, 10);
+
+    const user = new User({
+        firstName,
+        lastName,
+        emailId,
+        password : passwordHash
+    })
         await user.save();
         res.send('User added succesfully')
     }catch(err){
-        res.status(400).send("error on saving data :" + err.message);
+        res.status(400).send("Error:" + err.message);
     }
     
 })
