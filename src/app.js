@@ -20,7 +20,7 @@ app.post("/signup", async (req,res)=>{
     validationForSignUP(req);
 
     const {firstName,lastName,emailId,password} = req.body;
-
+    
     const passwordHash =  await bycrypt.hash(password, 10);
 
     const user = new User({
@@ -36,6 +36,31 @@ app.post("/signup", async (req,res)=>{
     }
     
 })
+
+app.post("/login", async (req,res)=>{
+  try{
+    const {emailId, password} =req.body;
+
+    const user = await User.findOne({emailId : emailId});
+    if(!user){
+      throw new Error("EmailId is not valid in DB");
+    }
+     
+    const isPasswordValid = await bycrypt.compare(password, user.password);
+  
+
+    if(isPasswordValid){
+      res.send("Login successfull");
+    }
+    else {
+      throw new Error("password is not correct");
+    }
+
+  } catch(err){
+    res.status(400).send("Error:" + err.message)
+  }
+
+});
 
 app.get('/user', async (req,res)=> {
     const userEmail = req.body.emailId;
