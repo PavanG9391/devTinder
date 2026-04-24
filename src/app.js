@@ -2,6 +2,8 @@ const express = require("express")
 const dns = require('dns');
 const User = require("./models/User.js");
 const {validationForSignUP} = require("./utils/validation.js");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const bycrypt = require("bcrypt");
 
@@ -11,6 +13,7 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 const app = express()
 const DBConnect = require('./config/database');
 app.use(express.json());
+app.use(cookieParser());
 
 
 app.post("/signup", async (req,res)=>{
@@ -50,6 +53,9 @@ app.post("/login", async (req,res)=>{
   
 
     if(isPasswordValid){
+      const token = await jwt.sign({_id: user._id}, "DEV@Tinder123");
+      console.log(token);
+      res.cookie("token",token);
       res.send("Login successfull");
     }
     else {
@@ -61,6 +67,31 @@ app.post("/login", async (req,res)=>{
   }
 
 });
+
+app.get('/profile', async (req,res)=> {
+ 
+  try{
+      const cookies = req.cookies;
+      const {token} = cookies;
+
+      if(!token){
+        throw new Error("Invalid token, Please login again");
+      }
+    
+      const decodedMessage = await jwt.verify(token, "DEV@Tinder123");
+     const {_id} = decodedMessage;
+      console.log(_id);
+
+      const user = await User.findById(_id);
+
+      res.send(user);
+    }
+    catch(err){
+      res.status(400).send("Error", + err.message);
+    }
+
+     
+})
 
 app.get('/user', async (req,res)=> {
     const userEmail = req.body.emailId;
